@@ -24,7 +24,7 @@ HIGHEST_BACKBONE_LVL = 5  # E.g., "conv5"-like level
 # ---------------------------------------------------------------------------- #
 # FPN with ResNet
 # ---------------------------------------------------------------------------- #
-
+# fpn return the features from all levels like torchvision
 def fpn_ResNet50_conv5_body():
     return fpn(
         ResNet.ResNet50_conv5_body, fpn_level_info_ResNet50_conv5()

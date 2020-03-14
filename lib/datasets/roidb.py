@@ -56,9 +56,12 @@ def combined_roidb_for_training(dataset_names, proposal_files):
         dataset_names = (dataset_names, )
     if isinstance(proposal_files, six.string_types):
         proposal_files = (proposal_files, )
+    # proposal_files can be none
     if len(proposal_files) == 0:
         proposal_files = (None, ) * len(dataset_names)
     assert len(dataset_names) == len(proposal_files)
+
+
     roidbs = [get_roidb(*args) for args in zip(dataset_names, proposal_files)]
     roidb = roidbs[0]
     for r in roidbs[1:]:

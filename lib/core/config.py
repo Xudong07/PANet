@@ -710,7 +710,7 @@ __C.FPN.ROI_MIN_LEVEL = 2
 __C.FPN.MULTILEVEL_RPN = False
 # Coarsest level of the FPN pyramid
 __C.FPN.RPN_MAX_LEVEL = 6
-# Finest level of the FPN pyramid
+# Finest level of the FPN pyrami
 __C.FPN.RPN_MIN_LEVEL = 2
 # FPN RPN anchor aspect ratios
 __C.FPN.RPN_ASPECT_RATIOS = (0.5, 1, 2)

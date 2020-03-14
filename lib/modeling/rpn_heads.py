@@ -14,6 +14,9 @@ import utils.net as net_utils
 # RPN and Faster R-CNN outputs and losses
 # ---------------------------------------------------------------------------- #
 
+
+# IF FPN.FPN_ON USING PARAMETER FPN.RPN....
+# IF NOT, USING RPN....
 def generic_rpn_outputs(dim_in, spatial_scale_in):
     """Add RPN outputs (objectness classification and bounding box regression)
     to an RPN model. Abstracts away the use of FPN.

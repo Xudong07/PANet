@@ -54,6 +54,7 @@ class JsonDataset(object):
     """A class representing a COCO json dataset."""
 
     def __init__(self, name):
+        #check the dataset name is defined in DATASETS or not.
         assert name in DATASETS.keys(), \
             'Unknown dataset name: {}'.format(name)
         assert os.path.exists(DATASETS[name][IM_DIR]), \
@@ -66,12 +67,15 @@ class JsonDataset(object):
         self.image_prefix = (
             '' if IM_PREFIX not in DATASETS[name] else DATASETS[name][IM_PREFIX]
         )
+        # using pycocotools
+        # coco can read the annotation file and get some information
         self.COCO = COCO(DATASETS[name][ANN_FN])
         self.debug_timer = Timer()
         # Set up dataset classes
         category_ids = self.COCO.getCatIds()
         categories = [c['name'] for c in self.COCO.loadCats(category_ids)]
         self.category_to_id_map = dict(zip(categories, category_ids))
+        # add background
         self.classes = ['__background__'] + categories
         self.num_classes = len(self.classes)
         self.json_category_id_to_contiguous_id = {
@@ -134,8 +138,12 @@ class JsonDataset(object):
             roidb = copy.deepcopy(self.COCO.loadImgs(image_ids))[:100]
         else:
             roidb = copy.deepcopy(self.COCO.loadImgs(image_ids))
+        # roidb is the images information in the coco annotation json file
+        # add some information (impath, area, box) with default value
         for entry in roidb:
             self._prep_roidb_entry(entry)
+        # gt is used to add the actual value in the entry (from cached file or caclulate)
+        # for box, xywh to x1y1x2y2
         if gt:
             # Include ground-truth object annotations
             cache_filepath = os.path.join(self.cache_path, self.name+'_gt_roidb.pkl')

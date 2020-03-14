@@ -137,11 +137,11 @@ def save_ckpt(output_dir, args, step, train_size, model, optimizer):
 
 def main():
     """Main function"""
-
+    # parse the parameters from command line
     args = parse_args()
     print('Called with args:')
     print(args)
-
+    # test the gpu and cuda
     if not torch.cuda.is_available():
         sys.exit("Need a CUDA device to run the code.")
 
@@ -150,6 +150,10 @@ def main():
     else:
         raise ValueError("Need Cuda device to run !")
 
+
+    # coco2017 is the name for the dataset, you can use you own name
+    # you musth define related dir or filename in the datasets catalog
+    # cfg is the parameter dict for overall program
     if args.dataset == "coco2017":
         cfg.TRAIN.DATASETS = ('coco_2017_train',)
         cfg.MODEL.NUM_CLASSES = 81
@@ -158,7 +162,8 @@ def main():
         cfg.MODEL.NUM_CLASSES = 2
     else:
         raise ValueError("Unexpected args.dataset: {}".format(args.dataset))
-
+    # update the cfg with yaml configuration file
+    # cfg is combined with three parts: cfg default definition; cfg file; arg variable
     cfg_from_file(args.cfg_file)
     if args.set_cfgs is not None:
         cfg_from_list(args.set_cfgs)
@@ -173,7 +178,11 @@ def main():
     assert (args.batch_size % cfg.NUM_GPUS) == 0, \
         'batch_size: %d, NUM_GPUS: %d' % (args.batch_size, cfg.NUM_GPUS)
     cfg.TRAIN.IMS_PER_BATCH = args.batch_size // cfg.NUM_GPUS
+    # in caffe, we can define the args.iter_size to determine update the parameter per args.iter_size
     effective_batch_size = args.iter_size * args.batch_size
+
+    # adaptively adjust the learning rate with origiinal batch size and user-defined size
+    # linear relationship
     print('effective_batch_size = batch_size * iter_size = %d * %d' % (args.batch_size, args.iter_size))
 
     print('Adaptive config changes:')
@@ -220,11 +229,17 @@ def main():
         cfg.SOLVER.BASE_LR = args.lr
     if args.lr_decay_gamma is not None:
         cfg.SOLVER.GAMMA = args.lr_decay_gamma
+    # check and infer some cfg parameter
     assert_and_infer_cfg()
 
     timers = defaultdict(Timer)
+    # parameters have been defined Now.
+
+
+
 
     ### Dataset ###
+    # roidb store the imgid and related boxes,keypoint information
     timers['roidb'].tic()
     roidb, ratio_list, ratio_index = combined_roidb_for_training(
         cfg.TRAIN.DATASETS, cfg.TRAIN.PROPOSAL_FILES)
@@ -234,6 +249,7 @@ def main():
     logger.info('Takes %.2f sec(s) to construct roidb', timers['roidb'].average_time)
 
     # Effective training sample size for one epoch
+    # because of the drop_last=True
     train_size = roidb_size // args.batch_size * args.batch_size
 
     batchSampler = BatchSampler(

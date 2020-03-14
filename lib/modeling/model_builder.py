@@ -77,9 +77,12 @@ class Generalized_RCNN(nn.Module):
         self.orphans_in_detectron = None
 
         # Backbone for feature extraction
+
         self.Conv_Body = get_func(cfg.MODEL.CONV_BODY)()
 
         # Region Proposal Network
+        # IF FPN.FPN_ON USING PARAMETER FPN.RPN....
+        # IF NOT, USING RPN....
         if cfg.RPN.RPN_ON:
             self.RPN = rpn_heads.generic_rpn_outputs(
                 self.Conv_Body.dim_out, self.Conv_Body.spatial_scale)
