@@ -62,6 +62,11 @@ def im_detect_all(model, im, box_proposals=None, timers=None):
     if timers is None:
         timers = defaultdict(Timer)
 
+
+    '''
+    We can change the cfg.test.scale related to image size
+    Detect original image
+    '''
     timers['im_detect_bbox'].tic()
     if cfg.TEST.BBOX_AUG.ENABLED:
         scores, boxes, im_scale, blob_conv = im_detect_bbox_aug(
@@ -76,6 +81,7 @@ def im_detect_all(model, im, box_proposals=None, timers=None):
     # cls_boxes boxes and scores are separated by class and in the format used
     # for evaluating results
     timers['misc_bbox'].tic()
+    # cls_boxes is the bbox for each classes N*5: THE FIFTH IS THE CONFIDENCE
     scores, boxes, cls_boxes = box_results_with_nms_and_limit(scores, boxes)
     timers['misc_bbox'].toc()
 
@@ -747,6 +753,7 @@ def box_results_with_nms_and_limit(scores, boxes):  # NOTE: support single-batch
     cls_boxes = [[] for _ in range(num_classes)]
     # Apply threshold on detection probabilities and apply NMS
     # Skip j = 0, because it's the background class
+    '''XUDONG'''
     for j in range(1, num_classes):
         inds = np.where(scores[:, j] > cfg.TEST.SCORE_THRESH)[0]
         scores_j = scores[inds, j]
