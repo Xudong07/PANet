@@ -763,7 +763,8 @@ def box_results_with_nms_and_limit(scores, boxes):  # NOTE: support single-batch
             nms_dets, _ = box_utils.soft_nms(
                 dets_j,
                 sigma=cfg.TEST.SOFT_NMS.SIGMA,
-                overlap_thresh=cfg.TEST.NMS,
+                overlap_thresh=cls
+            else:fg.TEST.NMS,
                 score_thresh=0.0001,
                 method=cfg.TEST.SOFT_NMS.METHOD
             )
